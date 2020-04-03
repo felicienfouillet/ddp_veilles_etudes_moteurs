@@ -1,2 +1,2 @@
-# ddp_veilles_etudes_moteurs
-Etude des différents moteurs de jeux vidéos
+# ddp_veilles_etudes_moteurs - MelonJS
+Etude du moteur de jeux vidéos MelonJS
