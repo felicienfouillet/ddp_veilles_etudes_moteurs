@@ -17,7 +17,7 @@ ig.module(
             // Load a font
             font: new ig.Font('media/04b03.font.png'),
 
-            gravity: 500,
+            gravity: 300,
             score: 0,
 
             init: function() {
@@ -35,14 +35,30 @@ ig.module(
                 // Update all entities and backgroundMaps
                 this.parent();
 
+                var player = this.getEntitiesByType(EntityPlayer)[0];
                 // Add your own, additional update code here
+                var xDifference = player.pos.x - ig.system.width / 2;
+
+                var yDifference = player.pos.y - ig.system.height / 2;
+
+                if (this.screen.x > xDifference + 2 || this.screen.x < xDifference - 2) {
+                    this.screen.x = (9 * this.screen.x + xDifference) / 10;
+                } else {
+                    this.screen.x = xDifference;
+                }
+
+                if (this.screen.y > yDifference + 2 || this.screen.y < yDifference - 2) {
+                    this.screen.y = (9 * this.screen.y + yDifference) / 10;
+                } else {
+                    this.screen.y = yDifference
+                }
             },
 
             draw: function() {
                 // Draw all entities and backgroundMaps
                 this.parent();
 
-                this.font.draw("Score: " + this.score.floor().toString(), 25, 25, ig.Font.ALIGN.LEFT);
+                this.font.draw("Score: " + this.score.floor().toString(), 25, 25, ig.Font.ALIGN.LEFT, 25);
             }
         });
 

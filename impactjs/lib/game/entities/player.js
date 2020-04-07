@@ -56,7 +56,7 @@ ig.module(
                 this.currentAnim = this.anims.idleAnim;
             }
 
-            if (this.pos.y >= 475) {
+            if (this.pos.y >= 500) {
                 ig.game.score = 0;
                 this.pos.x = 16;
                 this.pos.y = 343;
