@@ -5,8 +5,8 @@ ig.module(
         'impact.game',
         'impact.font',
 
+        'game.entities.cherry',
         'game.entities.player',
-        /*'game.entities.cherry',*/
 
         'game.levels.main'
     )
@@ -17,6 +17,9 @@ ig.module(
             // Load a font
             font: new ig.Font('media/04b03.font.png'),
 
+            gravity: 500,
+            score: 0,
+
             init: function() {
                 // Initialize your game here; bind keys etc.
                 ig.input.bind(ig.KEY.RIGHT_ARROW, 'right');
@@ -24,6 +27,8 @@ ig.module(
                 ig.input.bind(ig.KEY.SPACE, 'jump');
 
                 this.loadLevel(LevelMain);
+
+                ig.game.score == 0;
             },
 
             update: function() {
@@ -37,7 +42,7 @@ ig.module(
                 // Draw all entities and backgroundMaps
                 this.parent();
 
-
+                this.font.draw("Score: " + this.score.floor().toString(), 25, 25, ig.Font.ALIGN.LEFT);
             }
         });
 

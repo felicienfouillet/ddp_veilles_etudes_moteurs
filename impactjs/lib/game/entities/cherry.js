@@ -4,16 +4,19 @@ ig.module(
     'impact.entity'
 ).defines(function() {
     EntityCherry = ig.Entity.extend({
-        size: { x: 16, y: 16 },
+        size: { x: 21, y: 21 },
 
-        collides: ig.Entity.COLLIDES.FIXED,
-        type: ig.Entity.TYPE.A,
+        type: ig.Entity.TYPE.B,
+        checkAgainst: ig.Entity.COLLIDES.NONE,
+        collides: ig.Entity.COLLIDES.PASSIVE,
 
-        animSheet: new ig.AnimationSheet('media/cherry.png', 106, 15),
+        gravityFactor: 0,
+
+        animSheet: new ig.AnimationSheet('media/cherry.png', 21, 21),
 
         init: function(x, y, settings) {
             this.parent(x, y, settings);
-            this.addAnim('cherryAnim', 0.1, [0, 1, 2, 3, 4, 5, 6, 7]);
+            this.addAnim('cherryAnim', 0.125, [0, 1, 2, 3, 4, 3, 2, 1, 0]);
         },
 
         update: function() {
