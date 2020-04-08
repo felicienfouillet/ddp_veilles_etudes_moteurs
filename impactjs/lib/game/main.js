@@ -6,6 +6,7 @@ ig.module(
         'impact.font',
 
         'game.entities.cherry',
+        'game.entities.enemie',
         'game.entities.player',
 
         'game.levels.main'
@@ -27,8 +28,6 @@ ig.module(
                 ig.input.bind(ig.KEY.SPACE, 'jump');
 
                 this.loadLevel(LevelMain);
-
-                ig.game.score == 0;
             },
 
             update: function() {
@@ -50,7 +49,7 @@ ig.module(
                 if (this.screen.y > yDifference + 2 || this.screen.y < yDifference - 2) {
                     this.screen.y = (9 * this.screen.y + yDifference) / 10;
                 } else {
-                    this.screen.y = yDifference
+                    this.screen.y = yDifference;
                 }
             },
 
@@ -58,7 +57,8 @@ ig.module(
                 // Draw all entities and backgroundMaps
                 this.parent();
 
-                this.font.draw("Score: " + this.score.floor().toString(), 25, 25, ig.Font.ALIGN.LEFT, 25);
+                this.font.draw("Score: " + this.score.floor().toString(), 25, 25, ig.Font.ALIGN.LEFT);
+                this.font.draw("Health: " + this.getEntitiesByType(EntityPlayer)[0].health.floor().toString(), 25, 50, ig.Font.ALIGN.LEFT);
             }
         });
 

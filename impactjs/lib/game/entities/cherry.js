@@ -6,7 +6,7 @@ ig.module(
     EntityCherry = ig.Entity.extend({
         size: { x: 21, y: 21 },
 
-        type: ig.Entity.TYPE.B,
+        type: ig.Entity.TYPE.A,
         checkAgainst: ig.Entity.COLLIDES.NONE,
         collides: ig.Entity.COLLIDES.PASSIVE,
 
@@ -16,6 +16,7 @@ ig.module(
 
         init: function(x, y, settings) {
             this.parent(x, y, settings);
+
             this.addAnim('cherryAnim', 0.125, [0, 1, 2, 3, 4, 3, 2, 1, 0]);
         },
 

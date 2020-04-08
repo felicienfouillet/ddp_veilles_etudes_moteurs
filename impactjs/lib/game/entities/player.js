@@ -8,10 +8,12 @@ ig.module(
         offset: { x: 80, y: 45 },
 
         type: ig.Entity.TYPE.A,
-        checkAgainst: ig.Entity.TYPE.B,
+        checkAgainst: ig.Entity.TYPE.A,
         collides: ig.Entity.COLLIDES.PASSIVE,
 
         animSheet: new ig.AnimationSheet('media/player.png', 231, 140),
+
+        health: 50,
 
         accelGround: 400,
         accelAir: 200,
@@ -44,8 +46,6 @@ ig.module(
                 this.vel.y = -this.jump;
             }
 
-            this.currentAnim.flip.x = this.flip;
-
             if (this.vel.y < 0) {
                 this.currentAnim = this.anims.idleAnim;
             } else if (this.y > 0) {
@@ -55,6 +55,8 @@ ig.module(
             } else {
                 this.currentAnim = this.anims.idleAnim;
             }
+
+            this.currentAnim.flip.x = this.flip;
 
             if (this.pos.y >= 500) {
                 ig.game.score = 0;
