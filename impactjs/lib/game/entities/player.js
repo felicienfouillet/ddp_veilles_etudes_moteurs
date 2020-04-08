@@ -13,7 +13,7 @@ ig.module(
 
         animSheet: new ig.AnimationSheet('media/player.png', 231, 140),
 
-        health: 50,
+        health: 60,
 
         accelGround: 400,
         accelAir: 200,
@@ -58,8 +58,10 @@ ig.module(
 
             this.currentAnim.flip.x = this.flip;
 
-            if (this.pos.y >= 500) {
+            if (this.pos.y >= 500 || this.health <= 10) {
                 ig.game.score = 0;
+                ig.game.deathCount++;
+                this.health = 60;
                 this.pos.x = 16;
                 this.pos.y = 343;
             }

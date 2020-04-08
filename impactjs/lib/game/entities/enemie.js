@@ -4,7 +4,7 @@ ig.module(
     'impact.entity'
 ).defines(function() {
     EntityEnemie = ig.Entity.extend({
-        size: { x: 32, y: 26 },
+        size: { x: 30, y: 25 },
 
         type: ig.Entity.TYPE.B,
         checkAgainst: ig.Entity.COLLIDES.A,
@@ -12,16 +12,16 @@ ig.module(
 
         gravityFactor: 0,
 
-        animSheet: new ig.AnimationSheet('media/frog-idle.png', 32, 32),
+        animSheet: new ig.AnimationSheet('media/frog-idle.png', 35, 25),
 
         init: function(x, y, settings) {
             this.parent(x, y, settings);
 
-            this.addAnim('frogAnim', 0.125, [0, 1, 2, 3, 2, 1, 0]);
+            this.addAnim('frogAnim', 0.2, [0, 1, 2, 3]);
         },
 
         update: function() {
-            //this.currentAnim = this.anims.frogAnim;
+            this.currentAnim = this.anims.frogAnim;
 
             this.parent();
         },

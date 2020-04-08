@@ -60,8 +60,8 @@ LevelMain=/*JSON[*/{
 		},
 		{
 			"type": "EntityEnemie",
-			"x": 188,
-			"y": 389
+			"x": 204,
+			"y": 392
 		}
 	],
 	"layer": [
