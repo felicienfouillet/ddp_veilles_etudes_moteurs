@@ -22,12 +22,17 @@ ig.module(
             score: 0,
 
             init: function() {
+                this.loadLevel(LevelMain);
+
+                ig.music.add('media/track_1.ogg');
+                ig.music.volume = 0.5;
+                ig.music.play();
+
                 // Initialize your game here; bind keys etc.
                 ig.input.bind(ig.KEY.RIGHT_ARROW, 'right');
                 ig.input.bind(ig.KEY.LEFT_ARROW, 'left');
                 ig.input.bind(ig.KEY.SPACE, 'jump');
-
-                this.loadLevel(LevelMain);
+                var levelStatus = false;
             },
 
             update: function() {
@@ -59,6 +64,10 @@ ig.module(
 
                 this.font.draw("Score: " + this.score.floor().toString(), 25, 25, ig.Font.ALIGN.LEFT);
                 this.font.draw("Health: " + this.getEntitiesByType(EntityPlayer)[0].health.floor().toString(), 25, 50, ig.Font.ALIGN.LEFT);
+
+                if (this.levelStatus == true) {
+                    ig.game.font.draw("Bravo vous avez fini le niveau !", ig.system.width / 2, (ig.system.height / 2) - 50, ig.Font.ALIGN.CENTER);
+                }
             }
         });
 

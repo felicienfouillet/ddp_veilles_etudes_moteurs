@@ -64,6 +64,10 @@ ig.module(
                 this.pos.y = 343;
             }
 
+            if (this.pos.x >= 1540) {
+                ig.game.levelStatus = true;
+            }
+
             this.parent();
         },
 
