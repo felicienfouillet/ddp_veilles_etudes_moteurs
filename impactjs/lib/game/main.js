@@ -63,16 +63,16 @@ ig.module(
                 // Draw all entities and backgroundMaps
                 this.parent();
 
-                font.height = 5;
+                this.font.height = 5;
 
                 this.font.draw("Score: " + this.score.floor().toString(), 25, 25, ig.Font.ALIGN.LEFT);
                 this.font.draw("Health: " + (this.getEntitiesByType(EntityPlayer)[0].health.floor() - 10).toString(), 25, 35, ig.Font.ALIGN.LEFT);
                 this.font.draw("Death count: " + this.deathCount.floor().toString(), 25, 45, ig.Font.ALIGN.LEFT);
 
                 if (this.levelStatus == true) {
-                    ig.game.font.draw("Bravo vous avez fini le niveau !", ig.system.width / 2, (ig.system.height / 2) - 60, ig.Font.ALIGN.CENTER);
-                    ig.game.font.draw("Score: " + this.score.floor().toString() + "/10", ig.system.width / 2, (ig.system.height / 2) - 50, ig.Font.ALIGN.CENTER);
-                    ig.game.font.draw("Death count: " + this.deathCount.floor().toString(), ig.system.width / 2, (ig.system.height / 2) - 40, ig.Font.ALIGN.CENTER);
+                    this.font.draw("Bravo vous avez fini le niveau !", ig.system.width / 2, (ig.system.height / 2) - 60, ig.Font.ALIGN.CENTER);
+                    this.font.draw("Score: " + this.score.floor().toString() + "/10", ig.system.width / 2, (ig.system.height / 2) - 50, ig.Font.ALIGN.CENTER);
+                    this.font.draw("Death count: " + this.deathCount.floor().toString(), ig.system.width / 2, (ig.system.height / 2) - 40, ig.Font.ALIGN.CENTER);
                 }
             }
         });
