@@ -1,6 +1,6 @@
 var config = {
     type: Phaser.AUTO,
-    width: 768,
+    width: 782,
     height: 432,
     backgroundColor: '#2d2d2d',
     pixelArt: true,
@@ -82,9 +82,15 @@ function create() {
         repeat: -1
     });
 
-    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-
     cursors = this.input.keyboard.createCursorKeys();
+
+    var camera = this.cameras.main;
+    camera.startFollow(player);
+    camera.setBounds(0, 0, 1400, 216);
+
+    groundLayer.setCollisionBetween(1, 0);
+    this.physics.add.collider(player, groundLayer);
+    player.setCollideWorldBounds(true);
 
     var controlConfig = {
         camera: this.cameras.main,
@@ -99,7 +105,7 @@ function create() {
 }
 
 function update(time, delta) {
-    controls.update(delta);
+    //controls.update(delta);
 
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
@@ -115,7 +121,7 @@ function update(time, delta) {
         player.anims.play('idle');
     }
 
-    if (cursors.up.isDown && player.body.touching.down) {
-        player.setVelocityY(-330);
+    if (cursors.up.isDown) {
+        player.setVelocityY(-100);
     }
 }
