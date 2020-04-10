@@ -7,7 +7,7 @@ var config = {
     scene: {
         preload: preload,
         create: create,
-        updtae: update
+        update: update
     }
 };
 
@@ -16,23 +16,32 @@ var controls;
 var game = new Phaser.Game(config);
 
 function preload() {
-    //this.load.spritesheet('ground', 'assets/maps/tileset.png', { frameWidth: 16, frameHeight: 16 });
-    //this.load.spritesheet('props', 'assets/maps/props.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.tilemapTiledJSON('map', 'assets/maps/tile_map1.json');
+    this.load.baseURL = 'assets/maps/';
+    this.load.image('background', 'background_glacial_mountains_lightened.png');
+    this.load.tilemapTiledJSON('map', 'tile_map1.json');
 
-    this.load.spritesheet('character',
-        'assets/characters/adventurer-v1.5-Sheet.png', { frameWidth: 32, frameHeight: 48 }
-    );
+    //this.load.spritesheet('background', 'background_glacial_mountains_lightened.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('ground', 'tileset.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('props', 'props.png', { frameWidth: 16, frameHeight: 16 });
+
+    // this.load.spritesheet('character',
+    //     'assets/characters/adventurer-v1.5-Sheet.png', { frameWidth: 32, frameHeight: 48 }
+    // );
 }
 
 function create() {
-    map = this.make.tilemap({ key: 'map' });
+    var map = this.make.tilemap({ key: 'map' });
 
-    var groundTiles = map.addTilesetImage('groundTiles', 'ground');
-    var propsTiles = map.addTilesetImage('propsTiles', 'props');
 
+    //var map = this.add.tilemap('map');
+
+    var groundTiles = map.addTilesetImage('ground', 'ground');
+    var propsTiles = map.addTilesetImage('props', 'props');
+    var backgroundTiles = this.add.tileSprite(0, 0, 3000, 3000, 'background');
+
+    //var groundLayer = map.createStaticLayer(0, backgroundTiles, 0, 0);
     var groundLayer = map.createStaticLayer(0, groundTiles, 0, 0);
-    var propsLayer = map.createStaticLayer(0, propsTiles, 0, 0);
+    var propsLayer = map.createStaticLayer(1, propsTiles, 0, 0);
 
     this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
