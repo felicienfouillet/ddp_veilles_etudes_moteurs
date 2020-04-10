@@ -1,7 +1,7 @@
 var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 768,
+    height: 432,
     backgroundColor: '#2d2d2d',
     pixelArt: true,
     scene: {
@@ -20,8 +20,7 @@ function preload() {
     this.load.image('background', 'background_glacial_mountains_lightened.png');
     this.load.tilemapTiledJSON('map', 'tile_map1.json');
 
-    //this.load.spritesheet('background', 'background_glacial_mountains_lightened.png', { frameWidth: 16, frameHeight: 16 });
-    this.load.spritesheet('ground', 'tileset.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('platform', 'tileset.png', { frameWidth: 16, frameHeight: 16 });
     this.load.spritesheet('props', 'props.png', { frameWidth: 16, frameHeight: 16 });
 
     // this.load.spritesheet('character',
@@ -30,35 +29,31 @@ function preload() {
 }
 
 function create() {
-    var map = this.make.tilemap({ key: 'map' });
+    this.map = this.make.tilemap({ key: 'map' });
 
+    var groundTiles = this.map.addTilesetImage('platform', 'platform');
+    var propsTiles = this.map.addTilesetImage('props', 'props');
+    var backgroundTiles = this.add.tileSprite(0, 0, 384, 216, 'background').setScale(2);
 
-    //var map = this.add.tilemap('map');
+    var groundLayer = this.map.createStaticLayer('platform', groundTiles, 0, 0);
+    var propsLayer = this.map.createStaticLayer('props', propsTiles, 0, 0);
 
-    var groundTiles = map.addTilesetImage('ground', 'ground');
-    var propsTiles = map.addTilesetImage('props', 'props');
-    var backgroundTiles = this.add.tileSprite(0, 0, 3000, 3000, 'background');
+    // this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
 
-    //var groundLayer = map.createStaticLayer(0, backgroundTiles, 0, 0);
-    var groundLayer = map.createStaticLayer(0, groundTiles, 0, 0);
-    var propsLayer = map.createStaticLayer(1, propsTiles, 0, 0);
+    // var cursors = this.input.keyboard.createCursorKeys();
 
-    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+    // var controlConfig = {
+    //     camera: this.cameras.main,
+    //     left: cursors.left,
+    //     right: cursors.right,
+    //     up: cursors.up,
+    //     down: cursors.down,
+    //     speed: 0.5
+    // };
 
-    var cursors = this.input.keyboard.createCursorKeys();
-
-    var controlConfig = {
-        camera: this.cameras.main,
-        left: cursors.left,
-        right: cursors.right,
-        up: cursors.up,
-        down: cursors.down,
-        speed: 0.5
-    };
-
-    controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
+    // controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
 }
 
 function update(time, delta) {
-    controls.update(delta);
+    //    controls.update(delta);
 }
