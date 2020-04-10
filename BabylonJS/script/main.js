@@ -8,9 +8,9 @@ window.addEventListener('DOMContentLoaded', function() {
     var createScene = function() {
         var scene = new BABYLON.Scene(engine);
 
-        scene.clearColor = new BABYLON.Color3.White();
+        //scene.clearColor = new BABYLON.Color3.White();
 
-        var box = BABYLON.Mesh.CreateBox("Box", 2.0, scene);
+        /*var box = BABYLON.Mesh.CreateBox("Box", 2.0, scene);
         //var box2 = BABYLON.Mesh.CreateBox("Box2", 4.0, scene);
 
         var camera = new BABYLON.FreeCamera('camera1', new BABYLON.Vector3(0, 0, -10), scene);
@@ -22,7 +22,7 @@ window.addEventListener('DOMContentLoaded', function() {
         camera.keysLeft.push(81);
 
         camera.acceleration = 0.0005;
-        camera.speed = 2;
+        camera.speed = 2;*/
 
         /*var rotateCamera = new BABYLON.ArcRotateCamera("arcCam",
             BABYLON.Tools.ToRadians(45),
@@ -33,6 +33,15 @@ window.addEventListener('DOMContentLoaded', function() {
         rotateCamera.keysDown.push(40);
         rotateCamera.keysRight.push(39);
         rotateCamera.keysLeft.push(37);*/
+
+        BABYLON.SceneLoader.Append("scenes/", "scene.gltf", scene, function(scene) {
+            // Create a default arc rotate camera and light.
+            scene.createDefaultCameraOrLight(true, true, true);
+
+            // The default camera looks at the back of the asset.
+            // Rotate the camera by 180 degrees to the front of the asset.
+            scene.activeCamera.alpha += Math.PI;
+        });
 
         return scene;
     }
