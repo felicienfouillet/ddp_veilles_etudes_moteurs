@@ -60,8 +60,8 @@ function create() {
 
     this.anims.create({
         key: 'idle',
-        frames: this.anims.generateFrameNumbers('character', { start: 0, end: 4 }),
-        frameRate: 10,
+        frames: this.anims.generateFrameNumbers('character', { start: /*38*/ 0, end: /*41*/ 3 }),
+        frameRate: 5,
         repeat: -1
     });
 
@@ -165,7 +165,7 @@ function update() {
         }
     } else {
         player.setVelocityX(0);
-        player.anims.play('idle');
+        player.anims.play('idle', true);
     }
 
     if (isFalling == true) {
