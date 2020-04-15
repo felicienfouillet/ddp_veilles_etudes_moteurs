@@ -19,11 +19,19 @@ var config = {
 };
 
 var player;
+var skeleton1;
+
 var cursors;
 var controls;
+var A_Key;
+
 var isJumping;
 var isFalling;
+var isAttack;
 
+var healthText;
+var deathCount;
+var deathCountText;
 
 var game = new Phaser.Game(config);
 
@@ -37,6 +45,22 @@ function preload() {
 
     this.load.spritesheet('character',
         '../characters/adventurer-v1.5-Sheet.png', { frameWidth: 50, frameHeight: 37 }
+    );
+
+    this.load.spritesheet('skeletonIdle',
+        '../characters/skeleton/Skeleton-Idle.png', { frameWidth: 24, frameHeight: 32 }
+    );
+
+    this.load.spritesheet('skeletonAttack',
+        '../characters/skeleton/Skeleton-Attack.png', { frameWidth: 43, frameHeight: 37 }
+    );
+
+    this.load.spritesheet('skeletonHit',
+        '../characters/skeleton/Skeleton-Hit.png', { frameWidth: 24, frameHeight: 32 }
+    );
+
+    this.load.spritesheet('skeletonDeath',
+        '../characters/skeleton/Skeleton-Dead.png', { frameWidth: 24, frameHeight: 32 }
     );
 }
 
@@ -54,9 +78,13 @@ function create() {
     var propsLayer = this.map.createStaticLayer('props', propsTiles, 0, 20).setScale(2);
     var groundLayer = this.map.createStaticLayer('platform', groundTiles, 0, 20).setScale(2);
 
+    groundLayer.setCollisionByExclusion([-1]);
+
+
+    /*################### Player ####################*/
 
     player = this.physics.add.sprite(50, 325, 'character').setScale(2);
-    //player.setBounce(0.2);
+    player.health = 50;
 
     this.anims.create({
         key: 'idle',
@@ -93,13 +121,43 @@ function create() {
         repeat: 0
     });
 
+    this.anims.create({
+        key: 'attack',
+        frames: this.anims.generateFrameNumbers('character', { start: 38, end: 66 }),
+        frameRate: 30,
+        repeat: 0
+    });
+
+    this.physics.add.collider(player, groundLayer);
+    player.setCollideWorldBounds(false);
+
+
+    /*################### Skeleton ####################*/
+
+    skeleton1 = this.physics.add.sprite(450, 300, 'skeletonIdle').setScale(2);
+
+    this.anims.create({
+        key: 'skeleton_idle',
+        frames: this.anims.generateFrameNumbers('skeletonIdle', { start: 0, end: 10 }),
+        frameRate: 10,
+        repeat: -1
+    });
+
+    this.anims.create({
+        key: 'skeleton_attack',
+        frames: this.anims.generateFrameNumbers('skeletonAttack', { start: 0, end: 17 }),
+        frameRate: 10,
+        repeat: 0
+    });
+
+    this.physics.add.collider(skeleton1, groundLayer);
+    skeleton1.setCollideWorldBounds(false);
+    // skeleton1.body.setImmovable(true);
+
+
     var camera = this.cameras.main;
     camera.startFollow(player);
     camera.setBounds(0, 0, 14000, 216);
-
-    groundLayer.setCollisionByExclusion([-1]);
-    this.physics.add.collider(player, groundLayer);
-    player.setCollideWorldBounds(false);
 
     cursors = this.input.keyboard.createCursorKeys();
 
@@ -113,10 +171,25 @@ function create() {
         speed: 0.5
     };
 
+
+    A_Key = this.input.keyboard.addKey('A');
+
     controls = new Phaser.Cameras.Controls.FixedKeyControl(controlConfig);
+    healthText = this.add.text(10, 10, 'Health:', { font: '15px Arial', fill: '#fff' });
+    healthText.setScrollFactor(0);
+
+    deathCount = 0;
+    deathCountText = this.add.text(10, 25, 'DeathCount:', { font: '15px Arial', fill: '#fff' });
+    deathCountText.setScrollFactor(0);
 }
 
 function update() {
+    healthText.setText('Health: ' + player.health);
+    deathCountText.setText('DeathCount: ' + deathCount);
+
+    skeleton1.anims.play('skeleton_idle', true);
+    skeleton1.flipX = true;
+
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
         player.flipX = true;
@@ -165,7 +238,12 @@ function update() {
         }
     } else {
         player.setVelocityX(0);
-        player.anims.play('idle', true);
+
+        if (isFalling == true) {
+            player.anims.play('fall', true);
+        } else {
+            player.anims.play('idle', true);
+        }
     }
 
     if (isFalling == true) {
@@ -181,4 +259,43 @@ function update() {
     if (player.body.onFloor()) {
         isFalling = false;
     }
+
+    if (A_Key.isDown) {
+        isAttack = true;
+    }
+
+    if (isAttack == true) {
+        player.anims.play('attack', true);
+        this.tweens.add({
+            targets: player,
+            alpha: '+=1',
+            duration: 1000,
+            onComplete: function() {
+                isAttack = false;
+                console.log('this: ', this);
+            },
+        });
+    }
+
+    this.physics.world.collide(player, skeleton1, playerHitSkeleton);
+
+    if (player.health <= 0) {
+        player.x = 50;
+        player.y = 325;
+        player.health = 50;
+        deathCount++;
+
+        endText = this.add.text(275, 200, 'Game Over', { font: '35px Arial', fill: '#fff' });
+        endText.setScrollFactor(0);
+        this.tweens.add({
+            targets: endText,
+            alpha: '+=1',
+            duration: 1000,
+            onComplete: function() { endText.destroy() },
+        });
+    }
+}
+
+function playerHitSkeleton(player, skeleton1) {
+    player.health -= 10;
 }
