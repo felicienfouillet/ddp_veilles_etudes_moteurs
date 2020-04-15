@@ -21,6 +21,10 @@ var config = {
 var player;
 var skeleton1;
 
+// var groundGroup;
+// var playerGroup;
+// var ennemiesGroup;
+
 var cursors;
 var controls;
 var A_Key;
@@ -28,6 +32,7 @@ var A_Key;
 var isJumping;
 var isFalling;
 var isAttack;
+var isIdle
 
 var healthText;
 var deathCount;
@@ -77,6 +82,9 @@ function create() {
     var backgroundPropsLayer = this.map.createStaticLayer('background_props', propsTiles, 0, 20).setScale(2);
     var propsLayer = this.map.createStaticLayer('props', propsTiles, 0, 20).setScale(2);
     var groundLayer = this.map.createStaticLayer('platform', groundTiles, 0, 20).setScale(2);
+
+    // groundGroup = this.add.group();
+    // groundGroup.add(groundLayer);
 
     groundLayer.setCollisionByExclusion([-1]);
 
@@ -129,6 +137,7 @@ function create() {
     });
 
     this.physics.add.collider(player, groundLayer);
+    // player.setCollisionGroup(playerGroup);
     player.setCollideWorldBounds(false);
 
 
@@ -151,8 +160,11 @@ function create() {
     });
 
     this.physics.add.collider(skeleton1, groundLayer);
+    // skeleton1.setCollisionGroup(ennemiesGroup);
     skeleton1.setCollideWorldBounds(false);
     // skeleton1.body.setImmovable(true);
+
+    // this.physics.add.collider(playerGroup, groundGroup);
 
 
     var camera = this.cameras.main;
@@ -207,7 +219,10 @@ function update() {
                     targets: player,
                     alpha: '+=1',
                     duration: 250,
-                    onComplete: function() { isJumping = false; },
+                    onComplete: function() {
+                        isJumping = false;
+                        isIdle = true;
+                    },
                 });
             }
         } else {
@@ -230,7 +245,10 @@ function update() {
                     targets: player,
                     alpha: '+=1',
                     duration: 250,
-                    onComplete: function() { isJumping = false; },
+                    onComplete: function() {
+                        isJumping = false;
+                        isIdle = true;
+                    },
                 });
             }
         } else {
@@ -241,9 +259,31 @@ function update() {
 
         if (isFalling == true) {
             player.anims.play('fall', true);
-        } else {
-            player.anims.play('idle', true);
         }
+
+        if (isIdle == true) {
+            player.anims.play('idle', false); // ici le idle passe avant la fin de l'anim d'attaque, donc il stoppe l'ancienne :)
+        }
+    }
+
+    if (A_Key.isDown) {
+        this.anims.pauseAll();
+        this.isAttack = true; // le probleme etait que ta variable ! isAttack n'était plus reconnue dans le scope, car en var. avec le this tu attribue le isAttack à ta scene
+    }
+
+    if (this.isAttack == true) {
+        player.anims.play('attack', false); // ici, plutot qu'un tweens, ne peux tu pas aller chercher la fin de l'animation ? :)
+        var tween = this.tweens.add({
+            onCompleteScope: this,
+            targets: player,
+            alpha: '+=1',
+            duration: 500,
+            onComplete: function() {
+                this.isAttack = false;
+                isIdle = true;
+                console.log('attack', this);
+            }
+        });
     }
 
     if (isFalling == true) {
@@ -260,24 +300,8 @@ function update() {
         isFalling = false;
     }
 
-    if (A_Key.isDown) {
-        isAttack = true;
-    }
+    // this.physics.world.collide(player, skeleton1, playerHitSkeleton); // pourquoi ton collide est dans ton update §? plus dans la preparation de ton sprite
 
-    if (isAttack == true) {
-        player.anims.play('attack', true);
-        this.tweens.add({
-            targets: player,
-            alpha: '+=1',
-            duration: 1000,
-            onComplete: function() {
-                isAttack = false;
-                console.log('this: ', this);
-            },
-        });
-    }
-
-    this.physics.world.collide(player, skeleton1, playerHitSkeleton);
 
     if (player.health <= 0) {
         player.x = 50;
