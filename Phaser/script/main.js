@@ -8,7 +8,7 @@ var config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: false
+            debug: true
         }
     },
     scene: {
@@ -21,9 +21,8 @@ var config = {
 var player;
 var skeleton1;
 
-// var groundGroup;
-// var playerGroup;
-// var ennemiesGroup;
+var playerGroup;
+var ennemiesGroup;
 
 var cursors;
 var controls;
@@ -83,16 +82,14 @@ function create() {
     var propsLayer = this.map.createStaticLayer('props', propsTiles, 0, 20).setScale(2);
     var groundLayer = this.map.createStaticLayer('platform', groundTiles, 0, 20).setScale(2);
 
-    // groundGroup = this.add.group();
-    // groundGroup.add(groundLayer);
-
     groundLayer.setCollisionByExclusion([-1]);
 
 
     /*################### Player ####################*/
 
     player = this.physics.add.sprite(50, 325, 'character').setScale(2);
-    player.health = 50;
+    player.health = 500;
+    player.setCollideWorldBounds(false);
 
     this.anims.create({
         key: 'idle',
@@ -131,19 +128,18 @@ function create() {
 
     this.anims.create({
         key: 'attack',
-        frames: this.anims.generateFrameNumbers('character', { start: 38, end: 66 }),
-        frameRate: 30,
+        frames: this.anims.generateFrameNumbers('character', { start: 38, end: 70 }),
+        frameRate: 20,
         repeat: 0
     });
 
-    this.physics.add.collider(player, groundLayer);
-    // player.setCollisionGroup(playerGroup);
-    player.setCollideWorldBounds(false);
+    playerGroup = this.add.group();
+    playerGroup.add(player);
 
 
     /*################### Skeleton ####################*/
 
-    skeleton1 = this.physics.add.sprite(450, 300, 'skeletonIdle').setScale(2);
+    skeleton1 = this.physics.add.sprite(450, 310, 'skeletonIdle').setScale(2);
 
     this.anims.create({
         key: 'skeleton_idle',
@@ -159,13 +155,16 @@ function create() {
         repeat: 0
     });
 
-    this.physics.add.collider(skeleton1, groundLayer);
-    // skeleton1.setCollisionGroup(ennemiesGroup);
+    enemiesGroup = this.add.group();
+    enemiesGroup.add(skeleton1);
+    let children = enemiesGroup.children.entries;
+    for (let i = 0; i < children.length; i++) { children[i].body.moves = false; }
     skeleton1.setCollideWorldBounds(false);
-    // skeleton1.body.setImmovable(true);
 
-    // this.physics.add.collider(playerGroup, groundGroup);
 
+    this.physics.add.collider(playerGroup, groundLayer);
+    this.physics.add.collider(enemiesGroup, groundLayer);
+    this.physics.add.collider(playerGroup, enemiesGroup, playerHitSkeleton);
 
     var camera = this.cameras.main;
     camera.startFollow(player);
@@ -199,8 +198,8 @@ function update() {
     healthText.setText('Health: ' + player.health);
     deathCountText.setText('DeathCount: ' + deathCount);
 
-    skeleton1.anims.play('skeleton_idle', true);
-    skeleton1.flipX = true;
+    // skeleton1.anims.play('skeleton_idle', true);
+    // skeleton1.flipX = true;
 
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
@@ -267,22 +266,20 @@ function update() {
     }
 
     if (A_Key.isDown) {
-        this.anims.pauseAll();
         this.isAttack = true; // le probleme etait que ta variable ! isAttack n'était plus reconnue dans le scope, car en var. avec le this tu attribue le isAttack à ta scene
+        this.tweens.add({
+            targets: player,
+            alpha: '+=1',
+            duration: 1,
+            onComplete: function() {
+                this.isAttack = false;
+            }.bind(this),
+        });
     }
 
     if (this.isAttack == true) {
-        player.anims.play('attack', false); // ici, plutot qu'un tweens, ne peux tu pas aller chercher la fin de l'animation ? :)
-        var tween = this.tweens.add({
-            onCompleteScope: this,
-            targets: player,
-            alpha: '+=1',
-            duration: 500,
-            onComplete: function() {
-                this.isAttack = false;
-                isIdle = true;
-                console.log('attack', this);
-            }
+        player.anims.play('attack', true).on(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, function() {
+            isIdle = true;
         });
     }
 
@@ -300,13 +297,10 @@ function update() {
         isFalling = false;
     }
 
-    // this.physics.world.collide(player, skeleton1, playerHitSkeleton); // pourquoi ton collide est dans ton update §? plus dans la preparation de ton sprite
-
-
     if (player.health <= 0) {
         player.x = 50;
         player.y = 325;
-        player.health = 50;
+        player.health = 500;
         deathCount++;
 
         endText = this.add.text(275, 200, 'Game Over', { font: '35px Arial', fill: '#fff' });
@@ -320,6 +314,9 @@ function update() {
     }
 }
 
-function playerHitSkeleton(player, skeleton1) {
-    player.health -= 10;
+function playerHitSkeleton() {
+    skeleton1.anims.play('skeleton_attack', true);
+    skeleton1.on(Phaser.Animations.Events.SPRITE_ANIMATION_KEY_COMPLETE + 'skeleton_attack', function() {
+        player.health -= 10;
+    }.bind(skeleton1.anims.currentAnim));
 }
