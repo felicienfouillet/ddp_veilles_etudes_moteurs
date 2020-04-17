@@ -31,7 +31,7 @@ var A_Key;
 var isJumping;
 var isFalling;
 var isAttack;
-var isIdle
+var isIdle = true;
 
 var healthText;
 var deathCount;
@@ -199,7 +199,7 @@ function update() {
     deathCountText.setText('DeathCount: ' + deathCount);
 
     // skeleton1.anims.play('skeleton_idle', true);
-    // skeleton1.flipX = true;
+    skeleton1.flipX = true;
 
     if (cursors.left.isDown) {
         player.setVelocityX(-160);
@@ -259,36 +259,31 @@ function update() {
         if (isFalling == true) {
             player.anims.play('fall', true);
         }
-
         if (isIdle == true) {
             player.anims.play('idle', false); // ici le idle passe avant la fin de l'anim d'attaque, donc il stoppe l'ancienne :)
         }
     }
 
-    if (A_Key.isDown) {
+    if (A_Key.isDown && isIdle == true) {
+        isIdle = false;
         this.isAttack = true; // le probleme etait que ta variable ! isAttack n'était plus reconnue dans le scope, car en var. avec le this tu attribue le isAttack à ta scene
-        this.tweens.add({
-            targets: player,
-            alpha: '+=1',
-            duration: 1,
-            onComplete: function() {
-                this.isAttack = false;
-            }.bind(this),
-        });
     }
 
     if (this.isAttack == true) {
-        player.anims.play('attack', true).on(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, function() {
+        player.anims.play('attack', true).on(Phaser.Animations.Events.SPRITE_ANIMATION_KEY_COMPLETE + 'attack', function() {
             isIdle = true;
+            isAttack = false;
         });
     }
 
     if (isFalling == true) {
+        isIdle = false;
         player.anims.play('fall', true);
     }
 
 
     if (cursors.space.isDown && player.body.onFloor()) {
+        isIdle = false;
         isJumping = true;
         player.setVelocityY(-200);
     }
@@ -315,8 +310,7 @@ function update() {
 }
 
 function playerHitSkeleton() {
-    skeleton1.anims.play('skeleton_attack', true);
-    skeleton1.on(Phaser.Animations.Events.SPRITE_ANIMATION_KEY_COMPLETE + 'skeleton_attack', function() {
-        player.health -= 10;
-    }.bind(skeleton1.anims.currentAnim));
+    skeleton1.anims.play('skeleton_attack', true).on(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, function() {
+        player.health -= 0.5;
+    } /*.bind(skeleton1.anims.currentAnim)*/ );
 }
