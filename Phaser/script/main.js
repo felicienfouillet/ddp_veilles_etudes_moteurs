@@ -151,7 +151,7 @@ function create() {
     this.anims.create({
         key: 'skeleton_attack',
         frames: this.anims.generateFrameNumbers('skeletonAttack', { start: 0, end: 17 }),
-        frameRate: 10,
+        frameRate: 25,
         repeat: 0
     });
 
@@ -306,6 +306,10 @@ function update() {
             duration: 1000,
             onComplete: function() { endText.destroy() },
         });
+    }
+
+    if ((player.x >= (skeleton1.x - 50) && player.x <= (skeleton1.x + 50)) && this.isAttack == true) {
+        skeleton1.destroy();
     }
 }
 
