@@ -64,7 +64,7 @@ function preload() {
     );
 
     this.load.spritesheet('skeletonDeath',
-        '../characters/skeleton/Skeleton-Dead.png', { frameWidth: 24, frameHeight: 32 }
+        '../characters/skeleton/Skeleton-Dead.png', { frameWidth: 33, frameHeight: 32 }
     );
 }
 
@@ -152,6 +152,13 @@ function create() {
         key: 'skeleton_attack',
         frames: this.anims.generateFrameNumbers('skeletonAttack', { start: 0, end: 17 }),
         frameRate: 25,
+        repeat: 0
+    });
+
+    this.anims.create({
+        key: 'skeleton_death',
+        frames: this.anims.generateFrameNumbers('skeletonDeath', { start: 0, end: 14 }),
+        frameRate: 10,
         repeat: 0
     });
 
@@ -264,7 +271,7 @@ function update() {
         }
     }
 
-    if (A_Key.isDown && isIdle == true) {
+    if (A_Key.isDown /*&& isIdle == true*/ ) {
         isIdle = false;
         this.isAttack = true; // le probleme etait que ta variable ! isAttack n'était plus reconnue dans le scope, car en var. avec le this tu attribue le isAttack à ta scene
     }
@@ -272,8 +279,8 @@ function update() {
     if (this.isAttack == true) {
         player.anims.play('attack', true).on(Phaser.Animations.Events.SPRITE_ANIMATION_KEY_COMPLETE + 'attack', function() {
             isIdle = true;
-            isAttack = false;
-        });
+            this.isAttack = false;
+        }.bind(this));
     }
 
     if (isFalling == true) {
@@ -309,12 +316,17 @@ function update() {
     }
 
     if ((player.x >= (skeleton1.x - 50) && player.x <= (skeleton1.x + 50)) && this.isAttack == true) {
-        skeleton1.destroy();
+        skeleton1.anims.play('skeleton_death', false).on(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, function() {
+            //skeleton1.destroy();
+        });
     }
 }
 
 function playerHitSkeleton() {
-    skeleton1.anims.play('skeleton_attack', true).on(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, function() {
-        player.health -= 0.5;
+    player.health -= 0.5;
+    skeleton1.body.offset.x = 15;
+    skeleton1.anims.play('skeleton_attack', false).on(Phaser.Animations.Events.SPRITE_ANIMATION_COMPLETE, function() {
+        skeleton1.body.offset.x = 0;
+        //skeleton1.anims.play('skeleton_idle', true);
     } /*.bind(skeleton1.anims.currentAnim)*/ );
 }
