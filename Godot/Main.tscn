@@ -728,9 +728,10 @@ script/source = "extends KinematicBody2D
 var anim_player
 var label
 
-export var SPEED = 200
-export var JUMP = 275
-export var GRAVITY = 1000
+const SPEED = 200
+const MAX_VELOCITY = 200
+const JUMP = 275
+const GRAVITY = 1000
 
 var velocity = Vector2()
 var facing_right = false
@@ -743,9 +744,19 @@ func _ready():
 	label = get_parent().get_node(\"deathcount\")
 	
 func _physics_process(delta):
+	label.set_text(str(death_count))
 	var dir = 0
+	var onFloor = is_on_floor();
 	
-	velocity.y += delta * GRAVITY
+	if velocity.x > MAX_VELOCITY:
+		var new_speed = velocity.normalized()
+		new_speed *= MAX_VELOCITY
+		velocity.x = new_speed
+		
+	if onFloor and velocity.y > MAX_VELOCITY:
+		velocity.y = MAX_VELOCITY
+	else:
+		velocity.y += delta * GRAVITY
 
 	if Input.is_action_pressed(\"ui_left\"):
 		dir -=1
@@ -755,8 +766,6 @@ func _physics_process(delta):
 		velocity.x = SPEED
 	else:
 		velocity.x = 0
-
-	var onFloor = is_on_floor();
 	
 	if onFloor and Input.is_action_pressed(\"ui_up\"):
 		velocity.y = -JUMP
@@ -780,7 +789,6 @@ func _physics_process(delta):
 		position.x = -55
 		position.y = 8
 		death_count += 1
-		#label.set_text(death_count)
 
 func flipSprite():
 	facing_right = !facing_right
