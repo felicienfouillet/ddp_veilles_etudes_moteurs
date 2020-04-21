@@ -16,7 +16,6 @@
 [ext_resource path="res://assets/character/run/adventurer-run-02.png" type="Texture" id=14]
 [ext_resource path="res://assets/tileset/tileset.png" type="Texture" id=15]
 [ext_resource path="res://assets/background_glacial_mountains_lightened.png" type="Texture" id=16]
-[ext_resource path="res://scripts/Player.gd" type="Script" id=17]
 [ext_resource path="res://assets/tileset/props.png" type="Texture" id=18]
 
 [sub_resource type="ConvexPolygonShape2D" id=2]
@@ -723,6 +722,77 @@ points = PoolVector2Array( 0, 16, 32, 0, 32, 16, 16, 16 )
 40/shapes = [  ]
 40/z_index = 0
 
+[sub_resource type="GDScript" id=16]
+script/source = "extends KinematicBody2D
+
+var anim_player
+var label
+
+export var SPEED = 200
+export var JUMP = 275
+export var GRAVITY = 1000
+
+var velocity = Vector2()
+var facing_right = false
+
+var death_count = 0
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	anim_player =  $AnimatedSprite
+	label = get_parent().get_node(\"deathcount\")
+	
+func _physics_process(delta):
+	var dir = 0
+	
+	velocity.y += delta * GRAVITY
+
+	if Input.is_action_pressed(\"ui_left\"):
+		dir -=1
+		velocity.x = -SPEED
+	elif Input.is_action_pressed(\"ui_right\"):
+		dir +=1
+		velocity.x = SPEED
+	else:
+		velocity.x = 0
+
+	var onFloor = is_on_floor();
+	
+	if onFloor and Input.is_action_pressed(\"ui_up\"):
+		velocity.y = -JUMP
+
+	if facing_right and dir > 0:
+		flipSprite()
+	if !facing_right and dir < 0:
+		flipSprite()
+		
+	if onFloor:
+		if dir == 0:
+			PlayAnim('idle')
+		else:
+			PlayAnim('run')
+	else:
+		PlayAnim('jump')
+		
+	move_and_slide(velocity, Vector2(0, -1))
+	
+	if position.y >= 500:
+		position.x = -55
+		position.y = 8
+		death_count += 1
+		#label.set_text(death_count)
+
+func flipSprite():
+	facing_right = !facing_right
+	anim_player.flip_h = !anim_player.flip_h
+
+func PlayAnim(name):
+	if anim_player.is_playing() and anim_player.animation == name:
+		return
+	anim_player.play(name)
+	
+"
+
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
 "frames": [ ExtResource( 12 ), ExtResource( 10 ), ExtResource( 3 ), ExtResource( 6 ) ],
@@ -749,7 +819,7 @@ height = 7.29265
 position = Vector2( 80.4104, 464.558 )
 
 [node name="background_glacial_mountains_lightened" type="Sprite" parent="."]
-position = Vector2( 431.253, -154.774 )
+position = Vector2( 431.253, -151.457 )
 scale = Vector2( 2.66204, 2.66204 )
 texture = ExtResource( 16 )
 
@@ -762,11 +832,8 @@ format = 1
 tile_data = PoolIntArray( -262147, 37, 0, -262128, 35, 0, -262093, 35, 0, -196576, 35, 0, -5, 1, 0, 65531, 1, 0, 65532, 38, 0, 57, 34, 0, 60, 1, 0, 131067, 1, 0, 131070, 40, 0, 65536, 40, 0, 65538, 40, 0, 65543, 38, 0, 65552, 36, 0, 65553, 38, 0, 65586, 36, 0, 65587, 38, 0, 65596, 1, 0, 196603, 1, 0, 196604, 2, 0, 196605, 2, 0, 196606, 2, 0, 196607, 2, 0, 131072, 2, 0, 131073, 2, 0, 131074, 2, 0, 131075, 2, 0, 131076, 10, 0, 131078, 40, 0, 131093, 40, 0, 131104, 36, 0, 131105, 38, 0, 131112, 39, 0, 131113, 40, 0, 131122, 40, 0, 131126, 40, 0, 131127, 39, 0, 131128, 40, 0, 131132, 1, 0, 262140, 11, 0, 262141, 11, 0, 262142, 11, 0, 262143, 11, 0, 196608, 11, 0, 196609, 11, 0, 196610, 11, 0, 196611, 11, 0, 196612, 20, 0, 196614, 2, 0, 196615, 2, 0, 196616, 2, 0, 196624, 31, 0, 196625, 32, 0, 196626, 32, 0, 196627, 32, 0, 196628, 32, 0, 196629, 32, 0, 196630, 33, 0, 196638, 40, 0, 196645, 40, 0, 196646, 9, 0, 196648, 2, 0, 196649, 2, 0, 196656, 9, 0, 196658, 2, 0, 196659, 2, 0, 196660, 2, 0, 196661, 2, 0, 196662, 2, 0, 196663, 2, 0, 196664, 2, 0, 196665, 2, 0, 196666, 2, 0, 196667, 2, 0, 196668, 1, 0, 327676, 11, 0, 327677, 11, 0, 327678, 11, 0, 327679, 11, 0, 262144, 11, 0, 262145, 11, 0, 262146, 11, 0, 262147, 11, 0, 262148, 11, 0, 262149, 11, 0, 262150, 11, 0, 262151, 11, 0, 262152, 11, 0, 262174, 2, 0, 262175, 2, 0, 262176, 2, 0, 262177, 2, 0, 262178, 2, 0, 262179, 2, 0, 262180, 2, 0, 262181, 2, 0, 262182, 19, 0, 262184, 11, 0, 262185, 11, 0, 262192, 14, 0, 262194, 11, 0, 262195, 11, 0, 262196, 11, 0, 262197, 11, 0, 262198, 11, 0, 262199, 11, 0, 262200, 11, 0, 262201, 11, 0, 262202, 11, 0, 262203, 11, 0, 393212, 11, 0, 393213, 11, 0, 393214, 11, 0, 393215, 11, 0, 327680, 11, 0, 327681, 11, 0, 327682, 11, 0, 327683, 11, 0, 327684, 11, 0, 327685, 11, 0, 327686, 11, 0, 327687, 11, 0, 327688, 11, 0, 327710, 11, 0, 327711, 11, 0, 327712, 11, 0, 327713, 11, 0, 327714, 11, 0, 327715, 11, 0, 327716, 11, 0, 327717, 11, 0, 327718, 11, 0, 327719, 11, 0, 327720, 11, 0, 327721, 11, 0, 327729, 11, 0, 327730, 11, 0, 327731, 11, 0, 327732, 11, 0, 327733, 11, 0, 327734, 11, 0, 327735, 11, 0, 327736, 11, 0, 327737, 11, 0, 327738, 11, 0, 327739, 11, 0, 458748, 11, 0, 458749, 11, 0, 458750, 11, 0, 458751, 11, 0, 393216, 11, 0, 393217, 11, 0, 393218, 11, 0, 393219, 11, 0, 393220, 11, 0, 393221, 11, 0, 393222, 11, 0, 393223, 11, 0, 393224, 11, 0, 393246, 11, 0, 393247, 11, 0, 393248, 11, 0, 393249, 11, 0, 393250, 11, 0, 393251, 11, 0, 393252, 11, 0, 393253, 11, 0, 393254, 11, 0, 393255, 11, 0, 393256, 11, 0, 393257, 11, 0, 393265, 11, 0, 393266, 11, 0, 393267, 11, 0, 393268, 11, 0, 393269, 11, 0, 393270, 11, 0, 393271, 11, 0, 393272, 11, 0, 393273, 11, 0, 393274, 11, 0, 393275, 11, 0, 524284, 11, 0, 524285, 11, 0, 524286, 11, 0, 524287, 11, 0, 458752, 11, 0, 458753, 11, 0, 458754, 11, 0, 458755, 11, 0, 458756, 11, 0, 458757, 11, 0, 458758, 11, 0, 458759, 11, 0, 458760, 11, 0, 458782, 11, 0, 458783, 11, 0, 458784, 11, 0, 458785, 11, 0, 458786, 11, 0, 458787, 11, 0, 458788, 11, 0, 458789, 11, 0, 458790, 11, 0, 458791, 11, 0, 458792, 11, 0, 458793, 11, 0, 458801, 11, 0, 458802, 11, 0, 458803, 11, 0, 458804, 11, 0, 458805, 11, 0, 458806, 11, 0, 458807, 11, 0, 458808, 11, 0, 458809, 11, 0, 458810, 11, 0, 458811, 11, 0 )
 
 [node name="KinematicBody2D" type="KinematicBody2D" parent="."]
-position = Vector2( -55, 8 )
-script = ExtResource( 17 )
-__meta__ = {
-"_edit_group_": true
-}
+position = Vector2( -56.6313, 8 )
+script = SubResource( 16 )
 
 [node name="AnimatedSprite" type="AnimatedSprite" parent="KinematicBody2D"]
 position = Vector2( -1, 0.709869 )
@@ -775,5 +842,28 @@ frames = SubResource( 1 )
 animation = "jump"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KinematicBody2D"]
-position = Vector2( -0.27739, 10.2635 )
+position = Vector2( -0.481302, 9.44785 )
 shape = SubResource( 10 )
+
+[node name="Label" type="Label" parent="."]
+margin_left = -72.4333
+margin_top = -459.368
+margin_right = 10.5667
+margin_bottom = -445.368
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "DeathCount: "
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="deathcount" type="Label" parent="."]
+margin_left = 11.4201
+margin_top = -459.087
+margin_right = 51.4201
+margin_bottom = -445.087
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}

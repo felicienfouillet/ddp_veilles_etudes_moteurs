@@ -1,6 +1,7 @@
 extends KinematicBody2D
 
 var anim_player
+var label
 
 export var SPEED = 200
 export var JUMP = 275
@@ -9,10 +10,12 @@ export var GRAVITY = 1000
 var velocity = Vector2()
 var facing_right = false
 
+var death_count = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	anim_player =  $AnimatedSprite
+	label = get_node("Label")
 	
 func _physics_process(delta):
 	var dir = 0
@@ -51,6 +54,8 @@ func _physics_process(delta):
 	if position.y >= 500:
 		position.x = -55
 		position.y = 8
+		death_count += 1
+		label.set_text(death_count)
 
 func flipSprite():
 	facing_right = !facing_right
