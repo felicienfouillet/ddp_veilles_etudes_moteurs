@@ -7,7 +7,9 @@ public class PlayerController : MonoBehaviour
 {
     /*public float speed;*/
     public float maxSpeed = 2f;
-    public float jump = 50f;
+
+    float moveX;
+    float moveY;
 
     private bool facingLeft = false;
     private bool isGrounded;
@@ -24,6 +26,7 @@ public class PlayerController : MonoBehaviour
         isGrounded = true;
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
+        moveY = rb2d.velocity.y;
     }
 
     // Update is called once per frame
@@ -31,12 +34,16 @@ public class PlayerController : MonoBehaviour
     {
         float move = Input.GetAxis("Horizontal");
 
-        float moveX = move * maxSpeed;
-        float moveY = rb2d.velocity.y;
+        moveX = move * maxSpeed;
+        
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            moveY += jump;
+            moveY = 5;
+        }
+        else
+        {
+            moveY = rb2d.velocity.y;
         }
 
         rb2d.velocity = new Vector3(moveX, moveY);
