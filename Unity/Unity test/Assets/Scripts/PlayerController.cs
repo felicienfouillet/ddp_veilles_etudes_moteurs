@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
     /*public float speed;*/
     public float maxSpeed = 2f;
     bool facingLeft = false;
-    private Animator anim;
+    private Animator animator;
 
     private Rigidbody2D rb2d;
 
@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
     }
 
@@ -27,8 +27,16 @@ public class PlayerController : MonoBehaviour
         float move = Input.GetAxis("Horizontal");
 
         rb2d.velocity = new Vector3(move * maxSpeed, rb2d.velocity.y);
-
-        anim.SetFloat("Speed", Mathf.Abs(move));
+        if (move <= 0.5 && move >= -0.5)
+        {
+            //animator.SetBool("idle", true);
+            animator.Play("idle");
+        }
+        else
+        {
+            //animator.SetBool("idle", false);
+            animator.Play("run");
+        }
 
         if (move < 0 && !facingLeft)
         {
