@@ -7,7 +7,11 @@ public class PlayerController : MonoBehaviour
 {
     /*public float speed;*/
     public float maxSpeed = 2f;
-    bool facingLeft = false;
+    public float jump = 50f;
+
+    private bool facingLeft = false;
+    private bool isGrounded;
+
     private Animator animator;
 
     private Rigidbody2D rb2d;
@@ -17,6 +21,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        isGrounded = true;
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
     }
@@ -26,16 +31,37 @@ public class PlayerController : MonoBehaviour
     {
         float move = Input.GetAxis("Horizontal");
 
-        rb2d.velocity = new Vector3(move * maxSpeed, rb2d.velocity.y);
-        if (move <= 0.5 && move >= -0.5)
+        float moveX = move * maxSpeed;
+        float moveY = rb2d.velocity.y;
+
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            //animator.SetBool("idle", true);
-            animator.Play("idle");
+            moveY += jump;
+        }
+
+        rb2d.velocity = new Vector3(moveX, moveY);
+
+        if (move <= 0.1 && move >= -0.1)
+        {
+            if (isGrounded)
+            {
+                animator.Play("idle");
+            }
+            else
+            {
+                animator.Play("jump");
+            }
         }
         else
         {
-            //animator.SetBool("idle", false);
-            animator.Play("run");
+            if (isGrounded)
+            {
+                animator.Play("run");
+            }
+            else
+            {
+                animator.Play("jump");
+            }
         }
 
         if (move < 0 && !facingLeft)
@@ -54,5 +80,21 @@ public class PlayerController : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
+    }
+
+    void OnCollisionEnter(Collision col)
+    {
+        if (col.gameObject.tag == "tilemap")
+        {
+            isGrounded = true;
+        }
+    }
+
+    void OnCollisionExit(Collision col)
+    {
+        if (col.gameObject.name == "tilemap")
+        {
+            isGrounded = false;
+        }
     }
 }
