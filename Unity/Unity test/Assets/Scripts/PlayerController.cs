@@ -5,14 +5,13 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    /*public float speed;*/
     public float maxSpeed = 2f;
 
     float moveX;
     float moveY;
 
     private bool facingLeft = false;
-    private bool isGrounded;
+    bool isGrounded;
 
     private Animator animator;
 
@@ -23,7 +22,6 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        isGrounded = true;
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         moveY = rb2d.velocity.y;
@@ -52,10 +50,12 @@ public class PlayerController : MonoBehaviour
         {
             if (isGrounded)
             {
+                ResetRotation();
                 animator.Play("idle");
             }
             else
             {
+                FreezRotation();
                 animator.Play("jump");
             }
         }
@@ -63,10 +63,12 @@ public class PlayerController : MonoBehaviour
         {
             if (isGrounded)
             {
+                ResetRotation();
                 animator.Play("run");
             }
             else
             {
+                FreezRotation();
                 animator.Play("jump");
             }
         }
@@ -89,18 +91,31 @@ public class PlayerController : MonoBehaviour
         transform.localScale = scale;
     }
 
-    void OnCollisionEnter(Collision col)
+    void FreezRotation()
     {
-        if (col.gameObject.tag == "tilemap")
+        rb2d.constraints = RigidbodyConstraints2D.FreezeRotation;
+    }
+
+    void ResetRotation()
+    {
+        rb2d.constraints = RigidbodyConstraints2D.None;
+    }
+
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        if (col.gameObject.tag == "ground")
         {
+            Debug.Log("Collision enter");
             isGrounded = true;
         }
     }
 
-    void OnCollisionExit(Collision col)
+    void OnCollisionExit2D(Collision2D col)
     {
-        if (col.gameObject.name == "tilemap")
+        if (col.gameObject.tag == "ground")
         {
+            Debug.Log("Collision exit");
             isGrounded = false;
         }
     }
