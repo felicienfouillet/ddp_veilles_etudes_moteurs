@@ -16,6 +16,10 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
 
     private Rigidbody2D rb2d;
+    public GameObject pausePanel;
+    public GameObject menuImage;
+    public GameObject resumeButton;
+    public GameObject resumeText;
 
     Vector3 Velocity;
 
@@ -25,6 +29,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         moveY = rb2d.velocity.y;
+
     }
 
     // Update is called once per frame
@@ -35,7 +40,7 @@ public class PlayerController : MonoBehaviour
         moveX = move * maxSpeed;
         
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             moveY = 5;
         }
@@ -81,6 +86,11 @@ public class PlayerController : MonoBehaviour
         {
             Flip();
         }
+
+        if(rb2d.transform.position.y <= -5)
+        {
+            PauseGame();
+        }
     }
 
     void Flip()
@@ -118,5 +128,23 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Collision exit");
             isGrounded = false;
         }
+    }
+
+    void PauseGame()
+    {
+        Time.timeScale = 0;
+        menuImage.transform.position = rb2d.transform.position + new Vector3(0, 2, 0);
+        resumeButton.transform.position = rb2d.transform.position + new Vector3(0, 2, 0);
+        
+        resumeText.transform.position = rb2d.transform.position + new Vector3(0, 2, 0);
+        pausePanel.SetActive(true);
+        //Disable scripts that still work while timescale is set to 0
+    }
+
+    void ContinueGame()
+    {
+        Time.timeScale = 1;
+        pausePanel.SetActive(false);
+        //enable the scripts again
     }
 }
