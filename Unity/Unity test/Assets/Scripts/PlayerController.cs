@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using UnityEngine;
+using System;
 
 public class PlayerController : MonoBehaviour
 {
@@ -16,20 +17,16 @@ public class PlayerController : MonoBehaviour
     private Animator animator;
 
     private Rigidbody2D rb2d;
-    public GameObject pausePanel;
-    public GameObject menuImage;
-    public GameObject resumeButton;
-    public GameObject resumeText;
 
     Vector3 Velocity;
 
     // Start is called before the first frame update
     void Start()
     {
+        GameController.gameStatus = true;
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         moveY = rb2d.velocity.y;
-
     }
 
     // Update is called once per frame
@@ -89,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
         if(rb2d.transform.position.y <= -5)
         {
-            PauseGame();
+            GameController.PauseGame();
         }
     }
 
@@ -128,23 +125,5 @@ public class PlayerController : MonoBehaviour
             Debug.Log("Collision exit");
             isGrounded = false;
         }
-    }
-
-    void PauseGame()
-    {
-        Time.timeScale = 0;
-        menuImage.transform.position = rb2d.transform.position + new Vector3(0, 2, 0);
-        resumeButton.transform.position = rb2d.transform.position + new Vector3(0, 2, 0);
-        
-        resumeText.transform.position = rb2d.transform.position + new Vector3(0, 2, 0);
-        pausePanel.SetActive(true);
-        //Disable scripts that still work while timescale is set to 0
-    }
-
-    void ContinueGame()
-    {
-        Time.timeScale = 1;
-        pausePanel.SetActive(false);
-        //enable the scripts again
     }
 }
