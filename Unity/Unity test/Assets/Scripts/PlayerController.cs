@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        GameController.gameStatus = true;
+        PauseMenuController.gameStatus = true;
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         moveY = rb2d.velocity.y;
@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour
 
         if(rb2d.transform.position.y <= -5)
         {
-            GameController.PauseGame();
+            PauseMenuController.PauseGame();
         }
     }
 
