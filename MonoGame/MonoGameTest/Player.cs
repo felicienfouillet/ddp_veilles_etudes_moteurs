@@ -15,6 +15,8 @@ namespace MonoGameTest
             set;
         }
 
+
+
         public float Y
         {
             get;
